@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不二胖喵抢单系统</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css 动画库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        /* 自定义样式覆盖 */
+        :root {
+            --primary-color: #4e73df;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --info-color: #36b9cc;
+        }
+        
+        /* 黄色背景 */
+        body {
+            background-color: #ffffcc;
+            color: #333333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+        
+        .btn-info {
+            background-color: var(--info-color);
+            border-color: var(--info-color);
+        }
+        
+        .form-control {
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            color: #495057;
+        }
+        
+        .form-control:focus {
+            background-color: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1100;
+            border-radius: 0.75rem;
+        }
+        
+        .floating-ball {
+            position: fixed;
+            right: 20px;
+            bottom: 60px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ball-part {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .top-part {
+            background-color: var(--success-color);
+        }
+        
+        .bottom-part {
+            background-color: var(--primary-color);
+        }
+        
+        .order-record {
+            border-left: 3px solid var(--primary-color);
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+        }
+        
+        .order-record.success {
+            border-left-color: var(--success-color);
+        }
+        
+        .order-record.error {
+            border-left-color: var(--danger-color);
+        }
+        
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 204, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .status-bar {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.35rem;
+            margin-bottom: 1rem;
+        }
+        
+        .token-item {
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: 0.25rem;
+            background-color: #f8f9fa;
+        }
+        
+        .user-info-card {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0.35rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-header {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #d1d3e2;
+        }
+        
+        .module {
+            display: none;
+        }
+        
+        .module.active {
+            display: block;
+        }
+        
+        /* 美金符号飘落效果 */
+        .money-fall {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            display: none;
+            overflow: hidden;
+        }
+        
+        .money {
+            position: absolute;
+            color: gold;
+            font-size: 24px;
+            text-shadow: 0 0 5px rgba(255,215,0,0.7);
+            animation: fall linear forwards;
+            user-select: none;
+        }
+        
+        @keyframes fall {
+            to { 
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* 控制面板样式 */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- 美金符号飘落效果 -->
+    <div class="money-fall" id="moneyFall"></div>
+    
+    <!-- 控制面板 -->
+    <div class="control-panel">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="moneyToggle">
+            <label class="form-check-label" for="moneyToggle">飘落效果</label>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <!-- 头部标题 -->
+        <header class="text-center mb-4">
+            <h1 class="fw-bold">
+                <i class="fas fa-cat me-2"></i>不二胖喵抢单系统
+            </h1>
+            <p class="text-muted">内部版本 v20</p>
+        </header>
+
+        <!-- 加载状态 -->
+        <div id="loading">
+            <div class="spinner-border text-primary me-2" role="status"></div>
+            <span class="mt-2">加载中...</span>
+        </div>
+
+        <!-- 登录模块 -->
+        <section id="loginModule" class="card module active">
+            <div class="card-header">
+                <h2 class="h5 mb-0"><i class="fas fa-sign-in-alt me-2"></i>登录系统</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="fileName" class="form-label">Token保存文件名(推荐使用自己的名字)：</label>
+                    <input type="text" class="form-control" id="fileName" placeholder="默认token" value="token">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">手机号：</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="请输入手机号">
+                </div>
+                <div class="mb-3" id="codeGroup" style="display: none;">
+                    <label for="code" class="form-label">验证码：</label>
+                    <input type="text" class="form-control" id="code" placeholder="请输入6位验证码">
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <button id="sendCodeBtn" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i>发送验证码
+                    </button>
+                    <button id="loginBtn" class="btn btn-success" style="display: none;">
+                        <i class="fas fa-sign-in-alt me-1"></i>登录
+                    </button>
+                </div>
+                
+                <div class="mt-4">
+                    <h5 class="text-muted mb-3">已保存的Token</h5>
+                    <div class="token-list" id="tokenList"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 抢单配置模块 -->
+        <section id="configModule" class="card module">
+            <div class="card-header">
+                <h2 class="h5 mb-0"><i class="fas fa-cog me-2"></i>抢单配置</h2>
+            </div>
+            <div class="card-body">
+                <!-- 个人信息区域 -->
+                <div class="user-info-card">
+                    <div class="info-header">当前登录信息</div>
+                    <div id="configUserInfo" class="info-content">
+                        <div>加载中...</div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">宿舍类型：</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gender" id="maleDorm" value="男" checked>
+                            <label class="form-check-label" for="maleDorm">
+                                <i class="fas fa-mars me-1"></i>男生宿舍
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gender" id="femaleDorm" value="女">
+                            <label class="form-check-label" for="femaleDorm">
+                                <i class="fas fa-venus me-1"></i>女生宿舍
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">二级地址（可多选）：</label>
+                    <div id="subAddressContainer" class="d-flex flex-wrap gap-2 mb-2"></div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label class="form-check-label" for="selectAll">全选</label>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="orderLimit" class="form-label">抢单数量限制(0为不限制数量)：</label>
+                    <input type="number" class="form-control" id="orderLimit" placeholder="0表示不限制" value="">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="threadCount" class="form-label">线程数(1~20)：</label>
+                    <input type="number" class="form-control" id="threadCount" value="1" min="1" max="20">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="interval" class="form-label">请求延迟(毫秒)：</label>
+                    <input type="number" class="form-control" id="interval" value="1000" min="100">
+                </div>
+                
+                <div class="d-flex flex-wrap gap-2">
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>启动抢单
+                    </button>
+                    <button id="backBtn" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回
+                    </button>
+                    <button id="reloginBtn" class="btn btn-warning">
+                        <i class="fas fa-sync-alt me-1"></i>重新登录
+                    </button>
+                    <button id="searchBtn" class="btn btn-info">
+                        <i class="fas fa-search me-1"></i>查人
+                    </button>
+                    <button id="moneyBtn" class="btn btn-success">
+                        <i class="fas fa-dollar-sign me-1"></i>飘落效果
+                    </button>
+                    <button id="destroyBtn" class="btn btn-danger">
+                        <i class="fas fa-skull me-1"></i>自毁模式
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 监控面板模块 -->
+        <section id="monitorModule" class="card module">
+            <div class="card-header">
+                <h2 class="h5 mb-0"><i class="fas fa-tachometer-alt me-2"></i>抢单监控中</h2>
+            </div>
+            <div class="card-body">
+                <div class="status-bar d-flex justify-content-between align-items-center mb-3">
+                    <span id="status" class="fw-bold"><i class="fas fa-clock me-1"></i>等待开始...</span>
+                    <span id="time" class="badge bg-primary">--:--:--</span>
+                </div>
+                
+                <div class="stats-bar d-flex justify-content-between bg-light p-2 rounded mb-3">
+                    <span id="requestCount"><i class="fas fa-exchange-alt me-1"></i>总请求次数：0</span>
+                    <span id="successRate"><i class="fas fa-percentage me-1"></i>成功率：0%</span>
+                </div>
+                
+                <div class="order-list">
+                    <h5 class="text-muted mb-3"><i class="fas fa-list me-1"></i>订单记录</h5>
+                    <div id="orderRecords" class="d-flex flex-column gap-2"></div>
+                </div>
+                
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button id="stopBtn" class="btn btn-danger">
+                        <i class="fas fa-stop me-1"></i>停止抢单
+                    </button>
+                    <button id="otherFuncBtn" class="btn btn-secondary">
+                        <i class="fas fa-ellipsis-h me-1"></i>其他功能
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 其他功能模块 -->
+        <section id="otherModule" class="card module">
+            <div class="card-header">
+                <h2 class="h5 mb-0"><i class="fas fa-th-large me-2"></i>其他功能</h2>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <button id="reloginBtn2" class="btn btn-warning">
+                        <i class="fas fa-sync-alt me-1"></i>重新登录
+                    </button>
+                    <button id="searchBtn2" class="btn btn-info">
+                        <i class="fas fa-search me-1"></i>查人
+                    </button>
+                    <button id="moneyBtn2" class="btn btn-success">
+                        <i class="fas fa-dollar-sign me-1"></i>飘落效果
+                    </button>
+                    <button id="destroyBtn2" class="btn btn-danger">
+                        <i class="fas fa-skull me-1"></i>自毁模式
+                    </button>
+                </div>
+                
+                <button id="backToMonitorBtn" class="btn btn-secondary mt-4">
+                    <i class="fas fa-arrow-left me-1"></i>返回监控
+                </button>
+            </div>
+        </section>
+
+        <!-- 查人模块 -->
+        <section id="searchModule" class="card module">
+            <div class="card-header">
+                <h2 class="h5 mb-0"><i class="fas fa-search me-2"></i>外卖员查询</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="searchName" class="form-label">姓名：</label>
+                    <input type="text" class="form-control" id="searchName" placeholder="直接回车查询所有">
+                </div>
+                <button id="doSearchBtn" class="btn btn-primary">
+                    <i class="fas fa-search me-1"></i>查询
+                </button>
+                
+                <div id="searchResult" class="mt-3"></div>
+                
+                <button id="backToOtherBtn" class="btn btn-secondary mt-3">
+                    <i class="fas fa-arrow-left me-1"></i>返回
+                </button>
+            </div>
+        </section>
+        
+        <!-- 悬浮球 -->
+        <div id="floatingBall" class="floating-ball">
+            <div class="ball-part top-part"><i class="fas fa-sync-alt"></i></div>
+            <div class="ball-part bottom-part"><i class="fas fa-cog"></i></div>
+        </div>
+        
+        <!-- 通知提示 -->
+        <div id="toast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 添加JS文件 -->
+    <script src="https://yuan2008.github.io/123456/app.js"></script>
+    <script>
+        // 模拟加载完成
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+        }, 1500);
+        
+        // 美金符号飘落效果
+        function createMoney() {
+            const moneyFall = document.getElementById('moneyFall');
+            if (moneyFall.style.display === 'none') return;
+            
+            const money = document.createElement('div');
+            money.className = 'money';
+            money.innerHTML = '🌹';
+            money.style.left = Math.random() * 100 + 'vw';
+            money.style.animationDuration = Math.random() * 3 + 2 + 's';
+            money.style.opacity = Math.random() * 0.5 + 0.5;
+            money.style.fontSize = Math.random() * 20 + 16 + 'px';
+            money.style.transform = `rotate(${Math.random() * 360}deg)`;
+            moneyFall.appendChild(money);
+            
+            // 动画结束后移除元素
+            setTimeout(() => {
+                money.remove();
+            }, 5000);
+        }
+        
+        // 控制美金飘落效果
+        const moneyToggle = document.getElementById('moneyToggle');
+        const moneyBtn = document.getElementById('moneyBtn');
+        const moneyBtn2 = document.getElementById('moneyBtn2');
+        let moneyInterval;
+        
+        function toggleMoneyEffect() {
+            const moneyFall = document.getElementById('moneyFall');
+            const isActive = moneyFall.style.display === 'block';
+            
+            if (isActive) {
+                moneyFall.style.display = 'none';
+                clearInterval(moneyInterval);
+                moneyToggle.checked = false;
+                moneyBtn.innerHTML = '<i class="fas fa-dollar-sign me-1"></i>开启掉落';
+                moneyBtn2.innerHTML = '<i class="fas fa-dollar-sign me-1"></i>开启掉落';
+                
+                // 显示通知
+                document.querySelector('.toast-body').textContent = '飘落效果已关闭';
+                bootstrap.Toast.getOrCreateInstance(document.getElementById('toast')).show();
+            } else {
+                moneyFall.style.display = 'block';
+                moneyInterval = setInterval(createMoney, 300);
+                moneyToggle.checked = true;
+                moneyBtn.innerHTML = '<i class="fas fa-dollar-sign me-1"></i>关闭掉落';
+                moneyBtn2.innerHTML = '<i class="fas fa-dollar-sign me-1"></i>关闭掉落';
+                
+                // 显示通知
+                document.querySelector('.toast-body').textContent = '飘落效果已开启';
+                bootstrap.Toast.getOrCreateInstance(document.getElementById('toast')).show();
+            }
+        }
+        
+        // 绑定事件
+        moneyToggle.addEventListener('change', toggleMoneyEffect);
+        moneyBtn.addEventListener('click', toggleMoneyEffect);
+        moneyBtn2.addEventListener('click', toggleMoneyEffect);
+        
+        // 初始化Toast
+        const toastEl = document.getElementById('toast');
+        const toast = new bootstrap.Toast(toastEl);
+    </script>
+</body>
+</html>
