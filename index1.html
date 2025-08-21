@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不二胖喵抢单系统</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部标题 -->
+        <header>
+            <h1>不二胖喵抢单系统</h1>
+            <p class="version">内部版本 v20</p>
+        </header>
+
+        <!-- 加载状态 -->
+        <div id="loading" class="loading">加载中...</div>
+
+        <!-- 登录模块 -->
+        <section id="loginModule" class="module">
+            <h2>登录系统</h2>
+            <div class="form-group">
+                <label for="fileName">Token保存文件名(推荐使用自己的名字)：</label>
+                <input type="text" id="fileName" placeholder="默认token" value="token">
+            </div>
+            <div class="form-group">
+                <label for="phone">手机号：</label>
+                <input type="tel" id="phone" placeholder="请输入手机号">
+            </div>
+            <div class="form-group" id="codeGroup" style="display: none;">
+                <label for="code">验证码：</label>
+                <input type="text" id="code" placeholder="请输入6位验证码">
+            </div>
+            <button id="sendCodeBtn" class="btn primary">发送验证码</button>
+            <button id="loginBtn" class="btn success" style="display: none;">登录</button>
+            <div class="token-list" id="tokenList"></div>
+        </section>
+
+        <!-- 抢单配置模块 -->
+        <section id="configModule" class="module">
+            <h2>抢单配置</h2>
+            
+            <!-- 个人信息区域 -->
+            <div class="user-info-card">
+                <div class="info-header">当前登录信息</div>
+                <div id="configUserInfo" class="info-content">
+                    <div>加载中...</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>宿舍类型：</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="gender" value="男" checked> 男生宿舍</label>
+                    <label><input type="radio" name="gender" value="女"> 女生宿舍</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>二级地址（可多选）：</label>
+                <div id="subAddressContainer" class="checkbox-group"></div>
+                <label><input type="checkbox" id="selectAll"> 全选</label>
+            </div>
+            <div class="form-group">
+                <label for="orderLimit">抢单数量限制(0为不限制数量)：</label>
+                <input type="number" id="orderLimit" placeholder="0表示不限制" value="">
+            </div>
+            <div class="form-group">
+                <label for="threadCount">线程数(1~20)：</label>
+                <input type="number" id="threadCount" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="interval">请求延迟(毫秒)：</label>
+                <input type="number" id="interval" value="1000" min="100">
+            </div>
+            <button id="startBtn" class="btn primary">启动抢单</button>
+            <button id="backBtn" class="btn default">返回</button>
+            <button id="reloginBtn" class="btn default">重新登录</button>
+            <button id="searchBtn" class="btn default">查人</button>
+            <button id="destroyBtn" class="btn danger">自毁模式</button>
+        </section>
+
+        <!-- 监控面板模块（新增请求次数显示） -->
+        <section id="monitorModule" class="module">
+            <h2>抢单监控中</h2>
+            <div class="user-info"></div>
+            
+            <!-- 状态与计数区域 -->
+            <div class="status-bar">
+                <span id="status">等待开始...</span>
+                <span id="time">--:--:--</span>
+            </div>
+            <div class="stats-bar">
+                <span id="requestCount">总请求次数：0</span>
+                <span id="successRate">成功率：0%</span>
+            </div>
+            
+            <div class="order-list">
+                <h3>订单记录</h3>
+                <div id="orderRecords"></div>
+            </div>
+            <button id="stopBtn" class="btn danger">停止抢单</button>
+            <button id="otherFuncBtn" class="btn default">其他功能</button>
+        </section>
+
+        <!-- 其他功能模块 -->
+        <section id="otherModule" class="module">
+            <h2>其他功能</h2>
+            <div class="func-buttons">
+                <button id="reloginBtn" class="btn default">重新登录</button>
+                <button id="searchBtn" class="btn default">查人</button>
+                <button id="destroyBtn" class="btn danger">自毁模式</button>
+            </div>
+            <button id="backToMonitorBtn" class="btn default">返回监控</button>
+        </section>
+
+        <!-- 查人模块 -->
+        <section id="searchModule" class="module">
+            <h2>外卖员查询</h2>
+            <div class="form-group">
+                <label for="searchName">姓名：</label>
+                <input type="text" id="searchName" placeholder="直接回车查询所有">
+            </div>
+            <button id="doSearchBtn" class="btn primary">查询</button>
+            <div id="searchResult"></div>
+            <button id="backToOtherBtn" class="btn default">返回</button>
+        </section>
+        <!-- 悬浮球 -->
+        <div id="floatingBall" class="floating-ball">
+            <div class="ball-part top-part"></div>
+            <div class="ball-part bottom-part"></div>
+        </div>
+        <!-- 通知提示 -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="https://yuan2008.github.io/123456/app.js"></script>
+</body>
+</html>
